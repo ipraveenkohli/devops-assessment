@@ -13,7 +13,7 @@ provider "aws" {
 
 
 variable "key_name" {
-  default = "assessmentkey.pem"  
+  default = "assessmentkey"  
 }
 
 variable "instance_type" {
@@ -79,4 +79,5 @@ output "public_ip" {
   value       = aws_instance.devops-assessment.public_ip
 
 }
+
 
