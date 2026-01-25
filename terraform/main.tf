@@ -11,20 +11,16 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# -----------------------------
-# Variables (inline for simplicity)
-# -----------------------------
+
 variable "key_name" {
-  default = "my-keypair"   # 🔁 replace with your existing keypair name
+  default = "assessmentkey.pem"  
 }
 
 variable "instance_type" {
-  default = "t2.micro"
+  default = "t3.micro"
 }
 
-# -----------------------------
-# Security Group
-# -----------------------------
+
 resource "aws_security_group" "web_sg" {
   name        = "web-sg"
   description = "Allow SSH, HTTP, HTTPS"
@@ -65,11 +61,9 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
-# -----------------------------
-# EC2 Instance
-# -----------------------------
-resource "aws_instance" "web_server" {
-  ami           = "ami-0c02fb55956c7d316" # Amazon Linux 2 (us-east-1)
+
+resource "aws_instance" "devops-assessment" {
+  ami           = "ami-0b6c6ebed2801a5cb" 
   instance_type = var.instance_type
   key_name      = var.key_name
 
@@ -80,10 +74,8 @@ resource "aws_instance" "web_server" {
   }
 }
 
-# -----------------------------
-# Outputs
-# -----------------------------
 output "public_ip" {
   description = "Public IP of the EC2 instance"
   value       = aws_instance.web_server.public_ip
+
 }
