@@ -1,25 +1,24 @@
-# Use official Python image
-FROM python:3.10-slim
+FROM python:3.10-slim AS builder
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Set working directory
 WORKDIR /app
 
-# Copy requirements first for caching
+RUN apt-get update && apt-get install -y build-essential libpq-dev --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
 
-# Install dependencies
-RUN pip install --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
-
-# Copy the backend code
 COPY . .
 
-# Expose Django default port
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY --from=builder /install /usr/local
+
+COPY --from=builder /app /app
+
 EXPOSE 8000
 
-# Default command to run Django server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
