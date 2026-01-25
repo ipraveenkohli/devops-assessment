@@ -1,42 +1,25 @@
-FROM python:3.11-slim AS builder
+# Use official Python image
+FROM python:3.10-slim
 
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set working directory
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
+# Copy requirements first for caching
 COPY requirements.txt .
+
+# Install dependencies
 RUN pip install --upgrade pip \
-    && pip install --prefix=/install -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt
 
-
-# ---------- Runtime stage ----------
-FROM python:3.11-slim
-
-# Create non-root user
-RUN useradd -m django
-
-WORKDIR /app
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Copy installed dependencies
-COPY --from=builder /install /usr/local
-
-# Copy project files
+# Copy the backend code
 COPY . .
 
-# Change ownership
-RUN chown -R django:django /app
-
-USER django
-
+# Expose Django default port
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver"]
+# Default command to run Django server
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
