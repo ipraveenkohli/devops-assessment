@@ -3,5 +3,4 @@ djangorestframework>=3.15,<4.0   # if using DRF for APIs
 gunicorn>=21.0                   # production WSGI server
 psycopg2-binary>=2.9             # PostgreSQL connector (optional)
 python-dotenv>=1.0                # for environment variables
-django-cors-headers
 django-cors-headers               # cors header
