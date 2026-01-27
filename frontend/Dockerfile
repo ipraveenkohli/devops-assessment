@@ -1,17 +1,23 @@
-FROM node:20-alpine AS builder
+# Build stage
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package*.json ./
+RUN npm install
 
 COPY . .
-
 RUN npm run build
 
+
+# Runtime stage
 FROM nginx:alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY nginx.conf /etc/nginx/conf.d
+
+COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
