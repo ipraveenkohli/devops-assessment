@@ -11,6 +11,7 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: "config.settings"
       PYTHONUNBUFFERED: "1"
+      ALLOWED_HOSTS: '["*"]'
     command: python manage.py runserver 0.0.0.0:8000
 
   frontend:
